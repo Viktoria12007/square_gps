@@ -1,9 +1,9 @@
 import { HTTP } from "@/modules/http-common";
+import axios from "axios";
 
 const state = () => ({
   markers: [],
-  // eslint-disable-next-line
-  language: localStorage.language ? JSON.parse(localStorage.language) : "ru",
+  selectedMarkerId: null,
 });
 
 const mutations = {
@@ -11,43 +11,73 @@ const mutations = {
     localStorage.markers = JSON.stringify(markers);
     state.markers = markers;
   },
-  setSelectedLanguage(state, language) {
-    localStorage.language = JSON.stringify(language);
-    state.language = language;
+  selectMarker(state, selectedMarkerId) {
+    state.selectedMarkerId = selectedMarkerId;
   },
 };
 
-const getters = {};
+const getters = {
+  getSelectedMarker: (state) =>
+    state.markers.find((marker) => marker.id === state.selectedMarkerId),
+};
 
 const actions = {
-  async postMarkers({ dispatch }, newMarker) {
-    await HTTP.post("", newMarker).catch((e) => console.error(e));
+  async postMarkers({ commit, dispatch }, newMarker) {
+    await HTTP.post("", newMarker).catch((e) => {
+      commit(
+        "notify/addNotify",
+        {
+          message: `Ошибка ${e.name}: ${e.message} \n ${e.stack}`,
+          visible: false,
+          resolveDelete: false,
+        },
+        { root: true }
+      );
+    });
     await dispatch("getMarkers");
   },
-  // async putMarkers({ commit, dispatch }, newMarker) {
-  //   if (localStorage.markers) {
-  //     await HTTP.post("", newMarker).catch((e) => console.error(e));
-  //   }
-  //   const result = await dispatch("getMarkers");
-  //   commit("setMarkers", result);
-  // },
-  // async postMarkers({ commit, dispatch }, newMarker) {
-  //   if (localStorage.markers) {
-  //     await HTTP.post("", newMarker).catch((e) =>
-  //       console.error(e)
-  //     );
-  //   }
-  //   const result = dispatch("getMarkers");
-  //   commit("setMarkers", result);
-  // },
   getMarkers({ commit }) {
     return HTTP.get("")
       .then((markers) => {
-        console.debug(markers);
+        // throw new Error("Error");
+        // eslint-disable-next-line
+        // console.debug(markers);
         commit("setMarkers", markers.data);
         return markers.data;
       })
-      .catch((e) => console.error(e));
+      .catch((e) => {
+        commit(
+          "notify/addNotify",
+          {
+            message: `Ошибка ${e.name}: ${e.message} \n ${e.stack}`,
+            visible: false,
+            resolveDelete: false,
+          },
+          { root: true }
+        );
+      });
+  },
+  // eslint-disable-next-line no-unused-vars
+  getAddress({ commit }, coords) {
+    // eslint-disable-next-line
+    return axios.get(`https://geocode.maps.co/reverse?lat=${coords.lat}&lon=${coords.lng}`)
+      .then((result) => {
+        // commit("setMarkers", result.display_name);
+        // throw new Error("Error");
+        // eslint-disable-next-line no-unreachable
+        return result.data.display_name;
+      })
+      .catch((e) => {
+        commit(
+          "notify/addNotify",
+          {
+            message: `Ошибка ${e.name}: ${e.message} \n ${e.stack}`,
+            visible: false,
+            resolveDelete: false,
+          },
+          { root: true }
+        );
+      });
   },
 };
 
