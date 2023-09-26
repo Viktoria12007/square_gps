@@ -1,5 +1,5 @@
 <template>
-  <l-map ref="map" :zoom="zoom" :center="center" @click="handleMapClick">
+  <l-map :zoom.sync="zoom" :center.sync="center" @click="handleMapClick">
     <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
     <l-marker
       v-for="marker in markers"
@@ -7,7 +7,7 @@
       :visible="marker.visible"
       :draggable="marker.draggable"
       :lat-lng="marker.position"
-      @click="alert(marker)"
+      @click="handleSelectMarker(marker.id)"
     />
     <l-control position="bottomright">
       <v-btn
@@ -31,11 +31,14 @@
 // eslint-disable-next-line
 import L from "leaflet";
 import { LMap, LTileLayer, LMarker, LControl } from "vue2-leaflet";
-import { mapActions, mapState } from "vuex";
+import { mapActions, mapGetters, mapState } from "vuex";
+import languages from "@/mixins/languages";
+import handleSelectMarker from "@/mixins/handleSelectMarker";
 
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
   name: "Map",
+  mixins: [languages, handleSelectMarker],
   components: {
     LMap,
     LTileLayer,
@@ -47,27 +50,55 @@ export default {
       url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
       attribution:
         '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-      zoom: 15,
-      center: [51.505, -0.159],
       resolveAddMarkers: false,
     };
   },
+  // watch: {
+  //   selectedMarkerId() {
+  //     const coords = [
+  //       this.getSelectedMarker.position.lat,
+  //       this.getSelectedMarker.position.lng,
+  //     ];
+  //     this.center = coords;
+  //   },
+  // },
   computed: {
     ...mapState("markers", ["markers"]),
+    ...mapState("preferences", ["center"]),
+    ...mapGetters("markers", ["getSelectedMarker"]),
+    center: {
+      get() {
+        return this.$store.state.preferences.center;
+      },
+      set(value) {
+        this.$store.commit("preferences/setCenter", value);
+      },
+    },
+    zoom: {
+      get() {
+        return this.$store.state.preferences.zoom;
+      },
+      set(value) {
+        this.$store.commit("preferences/setZoom", value);
+      },
+    },
   },
   methods: {
-    ...mapActions("markers", ["postMarkers"]),
+    ...mapActions("markers", ["postMarkers", "getAddress"]),
     handleResolveAddMarker() {
-      console.debug("clickButton");
+      // console.debug("clickButton");
       this.resolveAddMarkers = true;
     },
-    handleMapClick(e) {
+    async handleMapClick(e) {
       if (this.resolveAddMarkers) {
-        console.debug(e);
+        // console.debug(e);
+        const { latlng } = e;
+        const address = await this.getAddress(latlng);
         const newMarker = {
           position: { lat: e.latlng.lat, lng: e.latlng.lng },
+          address,
         };
-        this.postMarkers(newMarker);
+        await this.postMarkers(newMarker);
         this.resolveAddMarkers = false;
       }
     },
@@ -76,7 +107,6 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.v-btn--fab.v-size--large.v-btn--absolute.v-btn--bottom.add-marker-button {
-  bottom: 20px;
-}
+.v-btn--fab.v-size--large.v-btn--absolute.v-btn--bottom.add-marker-button
+  bottom: 20px
 </style>
