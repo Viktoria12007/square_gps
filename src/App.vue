@@ -1,30 +1,24 @@
 <template>
   <v-app>
-    <Header />
-    <v-main>
-      <router-view />
-    </v-main>
+    <router-view />
   </v-app>
 </template>
 
 <script>
-import { mapActions } from "vuex";
-import Header from "@/components/Header";
+// import { mapActions } from "vuex";
 export default {
   name: "App",
-  components: {
-    Header,
-  },
+  components: {},
 
   data: () => ({
     //
   }),
   async mounted() {
     // this.postMarkers(null, true);
-    await this.getMarkers();
+    // await this.getMarkers();
   },
   methods: {
-    ...mapActions("markers", ["getMarkers", "postMarkers"]),
+    // ...mapActions("markers", ["getMarkers", "postMarkers"]),
   },
 };
 </script>
