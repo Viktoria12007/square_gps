@@ -4,6 +4,7 @@
     color="#6A76AB"
     dark
     src="https://picsum.photos/1920/1080?random"
+    style="z-index: 1100"
   >
     <template v-slot:img="{ props }">
       <v-img
@@ -18,7 +19,7 @@
 
     <v-spacer></v-spacer>
 
-    <v-menu offset-y z-index="1000">
+    <v-menu offset-y>
       <template v-slot:activator="{ on, attrs }">
         <v-btn icon v-bind="attrs" v-on="on">
           <v-icon>mdi-web</v-icon>
@@ -26,7 +27,7 @@
       </template>
 
       <v-list dense>
-        <v-list-item-group v-model="modelSelectedLanguage" color="primary">
+        <v-list-item-group :value="language" @change="setLanguage">
           <v-list-item value="ru">
             <v-list-item-title>
               {{ lan("ru") }}
@@ -45,7 +46,9 @@
     <template v-slot:extension>
       <v-tabs align-with-title>
         <v-tab to="/about">{{ lan("aboutTackTitle") }}</v-tab>
-        <v-tab to="/map">{{ lan("mapTitle") }}</v-tab>
+        <v-tab :to="selectedMarkerId ? `/map/${selectedMarkerId}` : `/map`">
+          {{ lan("mapTitle") }}
+        </v-tab>
       </v-tabs>
     </template>
   </v-app-bar>
@@ -60,31 +63,26 @@ export default {
   name: "Header",
   mixins: [languages],
   data() {
-    return {
-      // eslint-disable-next-line
-      modelSelectedLanguage: localStorage.language ? JSON.parse(localStorage.language) : "ru",
-    };
-  },
-  watch: {
-    modelSelectedLanguage(n) {
-      this.setSelectedLanguage(n);
-    },
+    return {};
   },
   computed: {
-    ...mapState("markers", ["language"]),
+    ...mapState("markers", ["selectedMarkerId"]),
+    ...mapState("preferences", ["language"]),
   },
   methods: {
-    ...mapMutations("markers", ["setSelectedLanguage"]),
-    // changeLanguage(lan) {
-    //   console.debug("changeLanguage");
-    //   localStorage.languages = JSON.stringify(lan);
-    // },
+    ...mapMutations("preferences", ["setLanguage"]),
   },
 };
 </script>
 
 <style lang="stylus">
-.app-bar-title > .v-app-bar-title__content {
-  width: 300px;
-}
+.app-bar-title > .v-app-bar-title__content
+  width: 300px
+header
+  & > .v-toolbar__content
+    max-width: 1785px
+    margin: 0 auto
+  & > .v-toolbar__extension
+    max-width: 1785px
+    margin: 0 auto
 </style>
