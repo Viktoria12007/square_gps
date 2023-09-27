@@ -22,28 +22,13 @@ const getters = {
 };
 
 const actions = {
-  async postMarkers({ commit, dispatch }, newMarker) {
-    await HTTP.post("", newMarker).catch((e) => {
-      commit(
-        "notify/addNotify",
-        {
-          message: `Ошибка ${e.name}: ${e.message} \n ${e.stack}`,
-          visible: false,
-          resolveDelete: false,
-        },
-        { root: true }
-      );
-    });
-    await dispatch("getMarkers");
-  },
-  getMarkers({ commit }) {
-    return HTTP.get("")
-      .then((markers) => {
-        // throw new Error("Error");
+  async addMarker({ commit, dispatch }, newMarker) {
+    await HTTP.post("", newMarker)
+      .then(async () => {
+        // return true;
+        // throw new Error("postMarkers");
         // eslint-disable-next-line
-        // console.debug(markers);
-        commit("setMarkers", markers.data);
-        return markers.data;
+        await dispatch("getMarkers");
       })
       .catch((e) => {
         commit(
@@ -55,9 +40,38 @@ const actions = {
           },
           { root: true }
         );
+        return false;
+      });
+    // console.debug(result);
+  },
+  getMarkers({ commit }, start = false) {
+    return HTTP.get("")
+      .then((markers) => {
+        // throw new Error("Error");
+        // eslint-disable-next-line
+        // console.debug(markers);
+        let markersFromStore = null;
+        if (start) {
+          markersFromStore = localStorage.markers
+            ? JSON.parse(localStorage.markers)
+            : markers.data;
+        }
+        commit("setMarkers", markersFromStore || markers.data);
+        return markersFromStore || markers.data;
+      })
+      .catch((e) => {
+        commit(
+          "notify/addNotify",
+          {
+            message: `Ошибка ${e.name}: ${e.message} \n ${e.stack}`,
+            visible: false,
+            resolveDelete: false,
+          },
+          { root: true }
+        );
+        return false;
       });
   },
-  // eslint-disable-next-line no-unused-vars
   getAddress({ commit }, coords) {
     // eslint-disable-next-line
     return axios.get(`https://geocode.maps.co/reverse?lat=${coords.lat}&lon=${coords.lng}`)
@@ -77,6 +91,7 @@ const actions = {
           },
           { root: true }
         );
+        return false;
       });
   },
 };
