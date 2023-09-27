@@ -29,7 +29,7 @@ export default {
   // eslint-disable-next-line
   aboutPageP3Item1P1: "When you click on the add button, the map should go into the mode of adding a marker: a marker should appear at the click location, and an entry with the address of the point should appear in the list",
   // eslint-disable-next-line
-  aboutPageP3Item1P2: "To find an address, you can use any free geocoding API, for example: https://geocode.maps.co/",
+  aboutPageP3Item1P2: "To find an address, you can use any free geocoding API, for example: ",
   // eslint-disable-next-line
   aboutPageP3Item1P3: "If the address is not found, you must display an error and not add the marker to the list.",
   // eslint-disable-next-line
