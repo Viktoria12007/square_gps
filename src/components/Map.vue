@@ -1,5 +1,11 @@
 <template>
-  <l-map :zoom.sync="zoom" :center.sync="center" @click="handleMapClick">
+  <l-map
+    :zoom.sync="zoom"
+    :center.sync="center"
+    :style="{ cursor: resolveAddMarkers ? 'pointer' : 'grab' }"
+    @ready="getMarkers(true)"
+    @click="handleMapClick"
+  >
     <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
     <l-marker
       v-for="marker in markers"
@@ -7,8 +13,14 @@
       :visible="marker.visible"
       :draggable="marker.draggable"
       :lat-lng="marker.position"
-      @click="handleSelectMarker(marker.id)"
-    />
+      @click="handleMarkerClick(marker.id)"
+    >
+      <l-popup>
+        <div>{{ `ID: ${marker.id}` }}</div>
+        <div>{{ `Lat: ${marker.position.lat}` }}</div>
+        <div>{{ `Lng: ${marker.position.lng}` }}</div>
+      </l-popup>
+    </l-marker>
     <l-control position="bottomright">
       <v-btn
         class="add-marker-button"
@@ -28,10 +40,8 @@
 </template>
 
 <script>
-// eslint-disable-next-line
-import L from "leaflet";
-import { LMap, LTileLayer, LMarker, LControl } from "vue2-leaflet";
-import { mapActions, mapGetters, mapState } from "vuex";
+import { LMap, LTileLayer, LMarker, LPopup, LControl } from "vue2-leaflet";
+import { mapActions, mapState } from "vuex";
 import languages from "@/mixins/languages";
 import handleSelectMarker from "@/mixins/handleSelectMarker";
 
@@ -43,6 +53,7 @@ export default {
     LMap,
     LTileLayer,
     LMarker,
+    LPopup,
     LControl,
   },
   data() {
@@ -53,19 +64,9 @@ export default {
       resolveAddMarkers: false,
     };
   },
-  // watch: {
-  //   selectedMarkerId() {
-  //     const coords = [
-  //       this.getSelectedMarker.position.lat,
-  //       this.getSelectedMarker.position.lng,
-  //     ];
-  //     this.center = coords;
-  //   },
-  // },
   computed: {
     ...mapState("markers", ["markers"]),
     ...mapState("preferences", ["center"]),
-    ...mapGetters("markers", ["getSelectedMarker"]),
     center: {
       get() {
         return this.$store.state.preferences.center;
@@ -84,23 +85,28 @@ export default {
     },
   },
   methods: {
-    ...mapActions("markers", ["postMarkers", "getAddress"]),
+    ...mapActions("markers", ["getMarkers", "addMarker", "getAddress"]),
     handleResolveAddMarker() {
-      // console.debug("clickButton");
       this.resolveAddMarkers = true;
     },
     async handleMapClick(e) {
       if (this.resolveAddMarkers) {
-        // console.debug(e);
+        this.resolveAddMarkers = false;
         const { latlng } = e;
         const address = await this.getAddress(latlng);
-        const newMarker = {
-          position: { lat: e.latlng.lat, lng: e.latlng.lng },
-          address,
-        };
-        await this.postMarkers(newMarker);
-        this.resolveAddMarkers = false;
+        if (address) {
+          const newMarker = {
+            position: { lat: latlng.lat, lng: latlng.lng },
+            address,
+          };
+          await this.addMarker(newMarker);
+        }
       }
+    },
+    handleMarkerClick(selectedMarkerId) {
+      this.handleSelectMarker(selectedMarkerId);
+      // eslint-disable-next-line
+      this.$router.push(`/map/${selectedMarkerId}`).catch((err) => {});
     },
   },
 };
@@ -109,4 +115,6 @@ export default {
 <style lang="stylus" scoped>
 .v-btn--fab.v-size--large.v-btn--absolute.v-btn--bottom.add-marker-button
   bottom: 20px
+.marker-adding-mode
+  cursor: pointer
 </style>
