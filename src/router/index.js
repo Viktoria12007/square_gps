@@ -1,5 +1,6 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
+import HomeView from "@/views/HomeView";
 import MapView from "../views/MapView.vue";
 import AboutView from "../views/AboutView";
 import NotFoundView from "@/views/NotFoundView";
@@ -8,12 +9,11 @@ Vue.use(VueRouter);
 
 const routes = [
   {
-    path: "",
-    name: "Home",
-    component: () => import("../views/HomeView.vue"),
+    path: "/",
+    component: HomeView,
 
     children: [
-      { path: "/", component: AboutView },
+      { path: "", component: AboutView },
 
       { path: "/about", component: AboutView },
 
