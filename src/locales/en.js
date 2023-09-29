@@ -6,6 +6,7 @@ export default {
   mapTitle: "Map",
   markersTitle: "Markers:",
   markerName: "Marker №",
+  error: "Error",
   errorPageText: "Error 404! Page not found!",
   errorPageButton: "Go back to main page",
   // eslint-disable-next-line
@@ -53,4 +54,6 @@ export default {
   aboutPageP6: "the test task is designed to demonstrate the ability to write good modular code, as well as the ability to use the specified technologies and more. This is code to be proud of.",
   aboutPageP7: "Example: ",
   close: "Close",
+  noMarkersData: "There are no markers on the map",
+  labelSearchMarkersInput: "Search for a marker by id, coordinates or address",
 };

@@ -6,6 +6,7 @@ export default {
   mapTitle: "Карта",
   markersTitle: "Маркеры:",
   markerName: "Маркер №",
+  error: "Ошибка",
   errorPageText: "Ошибка 404! Страница не найдена!",
   errorPageButton: "Вернуться на главную страницу",
   // eslint-disable-next-line
@@ -52,4 +53,6 @@ export default {
   aboutPageP6: "тестовое задание призвано показать умение писать хороший модульный код, а также умение пользоваться указанными технологиями и не только. Этим кодом нужно гордиться.",
   aboutPageP7: "Пример: ",
   close: "Закрыть",
+  noMarkersData: "Маркеров нет на карте",
+  labelSearchMarkersInput: "Поиск маркера по id, координатам или адресу",
 };

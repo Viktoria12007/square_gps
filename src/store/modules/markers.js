@@ -34,7 +34,7 @@ const actions = {
         commit(
           "notify/addNotify",
           {
-            message: `Ошибка ${e.name}: ${e.message} \n ${e.stack}`,
+            message: ` ${e.name}: ${e.message} \n ${e.stack}`,
             visible: false,
             resolveDelete: false,
           },
@@ -63,7 +63,7 @@ const actions = {
         commit(
           "notify/addNotify",
           {
-            message: `Ошибка ${e.name}: ${e.message} \n ${e.stack}`,
+            message: ` ${e.name}: ${e.message} \n ${e.stack}`,
             visible: false,
             resolveDelete: false,
           },
@@ -85,7 +85,7 @@ const actions = {
         commit(
           "notify/addNotify",
           {
-            message: `Ошибка ${e.name}: ${e.message} \n ${e.stack}`,
+            message: ` ${e.name}: ${e.message} \n ${e.stack}`,
             visible: false,
             resolveDelete: false,
           },
