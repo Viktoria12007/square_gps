@@ -7,13 +7,16 @@
       :value="notify.visible"
       @input="(e) => updateNotify(e)"
       max-width="500"
+      min-width="296"
+      app
       multi-line
       centered
       right
       tile
       color="red accent-2"
+      class="notifications"
     >
-      {{ notify.message }}
+      {{ `${lan("error")} ${notify.message}` }}
       <template v-slot:action="{ attrs }">
         <v-btn color="black" text v-bind="attrs" @click="updateNotify(false)">
           {{ lan("close") }}
@@ -58,4 +61,11 @@ export default {
 };
 </script>
 
-<style lang="stylus"></style>
+<style lang="stylus">
+@media (max-width: 1024px)
+  .notifications > .v-snack__wrapper
+    flex-direction: column
+  .notifications * .v-snack__content,
+  .notifications * .v-snack__action * .v-btn__content
+    font-size: 12px
+</style>

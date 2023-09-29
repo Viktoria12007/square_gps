@@ -5,20 +5,28 @@
 </template>
 
 <script>
-// import { mapActions } from "vuex";
+import { mapMutations } from "vuex";
+
 export default {
   name: "App",
   components: {},
+  data: () => ({}),
 
-  data: () => ({
-    //
-  }),
   async mounted() {
-    // this.postMarkers(null, true);
-    // await this.getMarkers();
+    this.reorganizationApp();
+    window.addEventListener("resize", () => {
+      this.reorganizationApp();
+    });
   },
   methods: {
-    // ...mapActions("markers", ["getMarkers", "postMarkers"]),
+    ...mapMutations("view", ["setView"]),
+    reorganizationApp() {
+      if (window.innerWidth > 1024) {
+        this.setView(false);
+      } else {
+        this.setView(true);
+      }
+    },
   },
 };
 </script>

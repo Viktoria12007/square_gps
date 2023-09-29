@@ -1,8 +1,45 @@
 <template>
-  <v-container class="fill-height map-container">
+  <v-container class="fill-height map__container">
     <v-row no-gutters class="fill-height">
-      <v-col cols="3">
-        <v-navigation-drawer permanent width="100%" class="map-sidebar">
+      <v-toolbar class="map__toolbar" dense absolute>
+        <v-combobox
+          clearable
+          full-width
+          hide-no-data
+          :no-data-text="lan('noMarkersData')"
+          :label="lan('labelSearchMarkersInput')"
+          :items="markers"
+          :filter="filterMarkers"
+          :value="displaySelectMarker"
+        >
+          <template v-slot:item="{ item }">
+            <v-list-item
+              :key="item.id"
+              :input-value="selectedMarkerId === item.id"
+              :to="`/map/${item.id}`"
+              @click="handleSelectMarker(item.id)"
+            >
+              <v-list-item-content>
+                <v-list-item-title>
+                  {{ `${lan("markerName")} ${item.id}` }}
+                </v-list-item-title>
+                <v-list-item-subtitle>
+                  {{ item.position | formatedPosition }}
+                </v-list-item-subtitle>
+                <v-list-item-subtitle class="text--primary">
+                  {{ item.address }}
+                </v-list-item-subtitle>
+              </v-list-item-content>
+            </v-list-item>
+          </template>
+        </v-combobox>
+      </v-toolbar>
+      <v-col cols="3" class="map__sidebar-col">
+        <v-navigation-drawer
+          :value="!mobileView"
+          width="100%"
+          class="map__sidebar"
+        >
           <v-list-item>
             <v-list-item-content>
               <v-list-item-title class="text-h6">
@@ -21,13 +58,12 @@
                 <v-list-item
                   :key="item.id"
                   :input-value="selectedMarkerId === item.id"
-                  link
                   :to="`/map/${item.id}`"
                   @click="handleSelectMarker(item.id)"
                 >
                   <v-list-item-content>
                     <v-list-item-title>
-                      {{ lan("markerName") + item.id }}
+                      {{ `${lan("markerName")} ${item.id}` }}
                     </v-list-item-title>
                     <v-list-item-subtitle>
                       {{ item.position | formatedPosition }}
@@ -42,7 +78,7 @@
           </v-list>
         </v-navigation-drawer>
       </v-col>
-      <v-col cols="9">
+      <v-col>
         <Map />
       </v-col>
     </v-row>
@@ -79,16 +115,42 @@ export default {
   },
   computed: {
     ...mapState("markers", ["markers"]),
+    ...mapState("view", ["mobileView"]),
+    displaySelectMarker() {
+      return this.selectedMarkerId
+        ? `${this.lan("markerName")} ${this.selectedMarkerId}`
+        : "";
+    },
   },
-  methods: {},
+  methods: {
+    filterMarkers(item, queryText) {
+      const text = `${this.lan("markerName")} ${item.id} ${item.position.lat} ${
+        item.position.lng
+      } ${item.address}`;
+      return (
+        text.toLocaleLowerCase().indexOf(queryText.toLocaleLowerCase()) > -1
+      );
+    },
+  },
 };
 </script>
 
 <style lang="stylus" scoped>
-//.map-sidebar > .v-navigation-drawer__content
-//  owerflow: visible
-.map-container
-  //align-items: flex-start
-  max-width: 1785px
-  padding: 0
+.map
+  &__container
+    max-width: 1785px
+    padding: 0
+  &__toolbar
+    display: none
+    z-index: 1100
+    left: 100px
+    top: 20px
+    margin-right: 10px
+@media (max-width: 1024px)
+  .map
+    &__toolbar
+      display: block
+  .map
+    &__sidebar-col
+      display: none
 </style>

@@ -13,7 +13,14 @@
       ></v-img>
     </template>
 
-    <v-app-bar-title class="app-bar-title">
+    <v-app-bar-nav-icon
+      class="burger-button"
+      @click="openBurgerMenu"
+    ></v-app-bar-nav-icon>
+
+    <v-spacer class="header__mobile-spacer"></v-spacer>
+
+    <v-app-bar-title class="app-bar-title header__title">
       {{ lan("appBarTitle") }}
     </v-app-bar-title>
 
@@ -43,7 +50,7 @@
       </v-list>
     </v-menu>
 
-    <template v-slot:extension>
+    <template v-if="!mobileView" v-slot:extension>
       <v-tabs align-with-title>
         <v-tab to="/about">{{ lan("aboutTackTitle") }}</v-tab>
         <v-tab :to="selectedMarkerId ? `/map/${selectedMarkerId}` : `/map`">
@@ -68,16 +75,23 @@ export default {
   computed: {
     ...mapState("markers", ["selectedMarkerId"]),
     ...mapState("preferences", ["language"]),
+    ...mapState("view", ["mobileView"]),
   },
   methods: {
     ...mapMutations("preferences", ["setLanguage"]),
+    openBurgerMenu() {
+      this.$emit("open-burger-menu", true);
+    },
   },
 };
 </script>
 
 <style lang="stylus">
-.app-bar-title > .v-app-bar-title__content
+.app-bar-title
   width: 300px
+  & > .v-app-bar-title__content
+    width: 300px
+    text-align: center
 header
   & > .v-toolbar__content
     max-width: 1785px
@@ -85,4 +99,19 @@ header
   & > .v-toolbar__extension
     max-width: 1785px
     margin: 0 auto
+</style>
+
+<style lang="stylus" scoped>
+.header__mobile-spacer
+  display: none
+.burger-button
+  display: none
+@media (max-width: 1024px)
+  .header
+    &__mobile-spacer
+      display: block
+    &__title
+      font-size: 16px
+  .burger-button
+    display: block
 </style>
