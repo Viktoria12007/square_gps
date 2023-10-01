@@ -3,6 +3,7 @@
     <v-row no-gutters class="fill-height">
       <v-toolbar class="map__toolbar" dense absolute>
         <v-combobox
+          ref="searchInputMarkers"
           clearable
           full-width
           hide-no-data
@@ -112,6 +113,13 @@ export default {
     if (to.params.id && !getMarkersIds.includes(++to.params.id))
       next({ name: "NotFound" });
     else next();
+  },
+  watch: {
+    mobileView(n) {
+      if (!n) {
+        this.$refs.searchInputMarkers.blur();
+      }
+    },
   },
   computed: {
     ...mapState("markers", ["markers"]),
