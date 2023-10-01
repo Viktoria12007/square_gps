@@ -3,7 +3,7 @@
     :zoom.sync="zoom"
     :center.sync="center"
     :style="{ cursor: resolveAddMarkers ? 'pointer' : 'grab' }"
-    @ready="getMarkers(true)"
+    @ready="getMarkers"
     @click="handleMapClick"
   >
     <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
@@ -42,13 +42,12 @@
 <script>
 import { LMap, LTileLayer, LMarker, LPopup, LControl } from "vue2-leaflet";
 import { mapActions, mapState } from "vuex";
-import languages from "@/mixins/languages";
 import handleSelectMarker from "@/mixins/handleSelectMarker";
 
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
   name: "Map",
-  mixins: [languages, handleSelectMarker],
+  mixins: [handleSelectMarker],
   components: {
     LMap,
     LTileLayer,
@@ -66,7 +65,6 @@ export default {
   },
   computed: {
     ...mapState("markers", ["markers"]),
-    ...mapState("preferences", ["center"]),
     center: {
       get() {
         return this.$store.state.preferences.center;
@@ -105,8 +103,7 @@ export default {
     },
     handleMarkerClick(selectedMarkerId) {
       this.handleSelectMarker(selectedMarkerId);
-      // eslint-disable-next-line
-      this.$router.push(`/map/${selectedMarkerId}`).catch((err) => {});
+      this.$router.push(`/map/${selectedMarkerId}`).catch(() => {});
     },
   },
 };
