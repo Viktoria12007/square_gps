@@ -1,4 +1,4 @@
-import { HTTP } from "@/modules/http-common";
+import { HTTP } from "../../backend/backend";
 import axios from "axios";
 
 const state = () => ({
@@ -8,7 +8,6 @@ const state = () => ({
 
 const mutations = {
   setMarkers(state, markers) {
-    localStorage.markers = JSON.stringify(markers);
     state.markers = markers;
   },
   selectMarker(state, selectedMarkerId) {
@@ -22,19 +21,16 @@ const getters = {
 };
 
 const actions = {
-  async addMarker({ commit, dispatch }, newMarker) {
-    await HTTP.post("", newMarker)
-      .then(async () => {
-        // return true;
-        // throw new Error("postMarkers");
-        // eslint-disable-next-line
-        await dispatch("getMarkers");
+  addMarker({ commit, dispatch }, newMarker) {
+    HTTP.post(newMarker)
+      .then(() => {
+        dispatch("getMarkers");
       })
-      .catch((e) => {
+      .catch(() => {
         commit(
           "notify/addNotify",
           {
-            message: ` ${e.name}: ${e.message} \n ${e.stack}`,
+            message: "errorAddMarker",
             visible: false,
             resolveDelete: false,
           },
@@ -42,28 +38,18 @@ const actions = {
         );
         return false;
       });
-    // console.debug(result);
   },
-  getMarkers({ commit }, start = false) {
-    return HTTP.get("")
+  getMarkers({ commit }) {
+    return HTTP.get()
       .then((markers) => {
-        // throw new Error("Error");
-        // eslint-disable-next-line
-        // console.debug(markers);
-        let markersFromStore = null;
-        if (start) {
-          markersFromStore = localStorage.markers
-            ? JSON.parse(localStorage.markers)
-            : markers.data;
-        }
-        commit("setMarkers", markersFromStore || markers.data);
-        return markersFromStore || markers.data;
+        commit("setMarkers", markers);
+        return markers;
       })
-      .catch((e) => {
+      .catch(() => {
         commit(
           "notify/addNotify",
           {
-            message: ` ${e.name}: ${e.message} \n ${e.stack}`,
+            message: "errorGetMarkers",
             visible: false,
             resolveDelete: false,
           },
@@ -76,16 +62,13 @@ const actions = {
     // eslint-disable-next-line
     return axios.get(`https://geocode.maps.co/reverse?lat=${coords.lat}&lon=${coords.lng}`)
       .then((result) => {
-        // commit("setMarkers", result.display_name);
-        // throw new Error("Error");
-        // eslint-disable-next-line no-unreachable
         return result.data.display_name;
       })
-      .catch((e) => {
+      .catch(() => {
         commit(
           "notify/addNotify",
           {
-            message: ` ${e.name}: ${e.message} \n ${e.stack}`,
+            message: "errorGetAddress",
             visible: false,
             resolveDelete: false,
           },
