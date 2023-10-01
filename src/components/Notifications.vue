@@ -16,7 +16,7 @@
       color="red accent-2"
       class="notifications"
     >
-      {{ `${lan("error")} ${notify.message}` }}
+      {{ lan(notify.message) }}
       <template v-slot:action="{ attrs }">
         <v-btn color="black" text v-bind="attrs" @click="updateNotify(false)">
           {{ lan("close") }}
@@ -31,7 +31,7 @@ import { mapGetters, mapMutations, mapState } from "vuex";
 import languages from "@/mixins/languages";
 
 export default {
-  // eslint-disable-next-line
+  // eslint-disable-next-line vue/multi-word-component-names
   name: "Notifications",
   mixins: [languages],
   components: {},
@@ -45,7 +45,6 @@ export default {
       }
     },
     "firstNotify.id"(n) {
-      console.debug(n);
       if (n !== null || n !== undefined) {
         this.updateNotify(true);
       }
