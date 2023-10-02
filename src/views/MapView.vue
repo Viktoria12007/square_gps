@@ -106,14 +106,14 @@ export default {
       return `${position.lat.toFixed(6)}, ${position.lng.toFixed(6)}`;
     },
   },
-  // beforeRouteEnter(to, from, next) {
-  //   const getMarkersIds = localStorage.markers
-  //     ? JSON.parse(localStorage.markers).map((marker) => marker.id)
-  //     : [];
-  //   if (to.params.id && !getMarkersIds.includes(++to.params.id))
-  //     next({ name: "NotFound" });
-  //   else next();
-  // },
+  beforeRouteEnter(to, from, next) {
+    const getMarkersIds = localStorage.markers
+      ? JSON.parse(localStorage.markers).map((marker) => marker.id)
+      : [];
+    if (to.params.id && !getMarkersIds.includes(++to.params.id))
+      next({ name: "NotFound" });
+    else next();
+  },
   watch: {
     mobileView(n) {
       if (!n) {
