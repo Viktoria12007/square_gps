@@ -1,11 +1,5 @@
 <template>
-  <v-app-bar
-    app
-    color="#6A76AB"
-    dark
-    src="https://picsum.photos/1920/1080?random"
-    style="z-index: 1100"
-  >
+  <v-app-bar app color="#6A76AB" dark style="z-index: 1100">
     <template v-slot:img="{ props }">
       <v-img
         v-bind="props"
